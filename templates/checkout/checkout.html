@@ -1,0 +1,595 @@
+{% extends 'base.html' %}
+{% block title %}aranoz{% endblock %}
+{% load static %}
+{% block body %}
+{% load mathfilters %}
+
+<style>
+  
+  .coupon-section {
+    width: 50%; 
+    margin: 0 auto; 
+    
+  }
+
+    /* Center the form */
+    .coupon-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px; /* Adjust margin as needed */
+    }
+  
+    /* Style the input field */
+    .coupon-input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px; /* Add some space between input and button */
+      /* Add more styling as needed */
+    }
+  
+    /* Style the button */
+    .apply-button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      /* Add more styling as needed */
+    }
+</style>
+<section class="checkout_area padding_top">
+  <div class="container">
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+      <div class="coupon-section">
+        {% if coupon_checkout %}
+          {% for item in coupon_checkout %}
+            <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-heading{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="flush-collapse{{ forloop.counter }}">
+                                <span class="text-dark">{{ forloop.counter }}.</span> <b>-{{ item.coupon_discount_amount }}% Off</b>
+                            </button>
+                        </h2>
+                        <div id="flush-collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ forloop.counter }}" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <p><b>*</b>Applicable only for order price more than <b>{{ item.min_price }}\-</b></p>
+                                <span class="ml-3">Coupon Code: <b class="text-danger">{{ item.coupon_code }}</b></span>
+                            </div>
+                        </div>
+                    </div>
+          {% endfor %}
+        {% else %}
+          <div class="mb-2"><h3>No Coupons Available</h3></div>
+        {% endif %}
+      </div>
+      
+ 
+      <form action="{% url 'checkout' %}" method="POST" class="coupon-form">
+        {% csrf_token %}
+        <input type="text" name="coupon" placeholder="Enter coupon code" class="coupon-input">
+        <button type="submit" class="btn_1">Apply Coupon</button>
+      </form>
+      </div>
+      <br>
+      <br>
+      <br>
+      <div class="row">
+          <div class="col-lg-6">
+              <div class="returning_customer">
+                  <button type="button" class="btn_1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      New Address
+                  </button>
+                  <br>
+      
+                  <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel" style="font-weight: bold;">Billing Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <form action="{% url 'addcheckoutaddr' %}" method="POST">
+                              {% csrf_token %}
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <div class="checkout__input">
+                                    <p>First Name<span>*</span></p>
+                                    <input type="text" name="firstname" style="border-radius: 20px;">
+                                  </div>
+                                </div>
+                                <div class="col-lg-6">
+                                  <div class="checkout__input">
+                                    <p>Last Name<span>*</span></p>
+                                    <input type="text" name="lastname" style="border-radius: 20px;">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="checkout__input">
+                                <p>Country<span>*</span></p>
+                                <input type="text" name="country" style="border-radius: 20px;">
+                              </div>
+                              <div class="checkout__input">
+                                <p>Address<span>*</span></p>
+                                <input type="text" class="checkout__input__add" name="address" style="border-radius: 20px;">
+                              </div>
+                              <div class="checkout__input">
+                                <p>Town/City<span>*</span></p>
+                                <input type="text" name="city" style="border-radius: 20px;">
+                              </div>
+                              <div class="checkout__input">
+                                <p>State<span>*</span></p>
+                                <input type="text" name="state" style="border-radius: 20px;">
+                              </div>
+                              <div class="checkout__input">
+                                <p>Postcode / ZIP<span>*</span></p>
+                                <input type="text" name="pincode" style="border-radius: 20px;">
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <div class="checkout__input">
+                                    <p>Phone<span>*</span></p>
+                                    <input type="text" name="phone" style="border-radius: 20px;">
+                                  </div>
+                                </div>
+                                <div class="col-lg-6">
+                                  <div class="checkout__input">
+                                    <p>Email<span>*</span></p>
+                                    <input type="text" name="email" style="border-radius: 20px;">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="checkout__input">
+                                <p>Order notes<span>*</span></p>
+                                <input type="text" placeholder="Notes about your order, e.g. special notes for delivery." name="ordernote" style="border-radius: 20px;">
+                              </div>
+                          </div>
+                          <div class="modal-footer d-flex justify-content-center">
+                            <button type="submit" class="btn btn-danger" style="border-radius: 20px;">Create New Account</button>
+                        
+                            </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <br>
+                      
+
+                      <form method="POST" action="{% url 'placeorder' %}" id="orderForm">
+                      {% csrf_token %}
+                        <div class="mb-4">
+                            <h4 class="font-weight-semi-bold mb-4">Select Address</h4>
+                      
+                              {% for a in address %}
+                              <div class="card mb-3">
+                                <div class="custom-control custom-radio">
+                                  <input type="radio" value="{{a.id}}" id="free-shipping{{ forloop.counter }}"
+                                         name="address" class="custom-control-input">
+                                  
+                                         <label class="custom-control-label"
+                                         for="free-shipping{{ forloop.counter }}">
+                                      Set Default Address
+                                  </label>
+                              </div><!-- End .custom-control -->
+                              
+                               
+                                    
+                                <div class="card-body">
+                                  <h5 class="card-title">{{ a.first_name}} {{ a.last_name}} </h5>
+                                  <h5 class="card-title">Mob : {{a.phone}}</h5>
+                                  <h5 class="card-title">{{a.address}}, {{a.pincode}}</h5>
+                                  <h5 class="card-text">{{a.city}}-{{a.state}}-{{a.country}}</h5>
+                                <div>
+  
+                                <!-- Button trigger vie address -->
+                                  <button type="button" class="btn_1" data-bs-toggle="modal" data-bs-target="#viewaddress{{forloop.counter}}">
+                                    View
+                                  </button>
+                                
+                                  <!-- Modal -->
+                                  <div class="modal fade" id="viewaddress{{forloop.counter}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
+                                          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                            <i class="fa fa-times"></i>
+                                          </button>
+                                        </div>
+                                        <div class="modal-body">
+  
+                                          <div class="row">
+                                            <div class="col-sm-5">
+                                              <p class="mb-0">Name</p>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <input type="hidden" value="{{ a.first_name}} {{ a.last_name}} " name="first_name">
+                                                {{ a.first_name}} {{ a.last_name}} 
+                                            </div>
+                                          </div>
+                                          <hr>
+
+                                          <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Phone</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.phone}}
+                                                  <input type="hidden" value="{{ a.phone}}" name="phone">
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Email</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.email}}
+                                                  <input type="hidden" value="{{ a.email}}" name="email">
+
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                          <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Address</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.address}}
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Town/City</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.city}}
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Postcode / ZIPy</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.pincode}}
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">State</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.state}}
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+                                              <div class="col-sm-5">
+                                                <p class="mb-0">Country</p>
+                                              </div>
+                                              <div class="col-sm-7">
+                                                  {{ a.country}}
+                                              </div>
+                                            </div>
+                                            <hr>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                          <a  class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}">
+                                            delete
+                                          </a>
+                              
+                                            <!--Delete Modal -->
+                                            <div class="modal fade" id="deletaddress{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                              <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                  <div class="modal-header">
+                                                    <h5 class="" id="exampleModalLabel">Delete</h5>
+                                                    <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i class="fa fa-times" ></i></button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                    <p>Are you sure to delete Address <span class="text-primary">" {{a.first_name}} {{a.last_name}} ..."</span></p>
+                                                    
+                                                      <div class="d-flex justify-content-center">
+                                                        <a type="button" href="{% url 'deleteaddresscheckout' a.id %}"
+                                                          class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</a>
+                                                      </div>
+                                  
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                
+                              </div>
+                              
+                          </div>
+                        
+                          </div>
+                                {% endfor %}
+                            <div class="card-body">
+                              {% if not address %}<h5 class="card-title">No address saved</h5>{% endif %} 
+                              <p class="card-text"> </p>
+                              <div>
+                              </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                      <div class="order_box text-left">
+                          <h2>Your Order</h2>
+                          <div class="checkout__order__products">
+                              <ul class="list text-left">
+                                  {% for item in cartitems %}
+                                  <li>
+                                      <div class="product-details">
+                                          {% comment %} <img src="{{ item.variation.image.url }}" height="40px" alt=""> {% endcomment %}
+                                          <div class="product-info">
+                                              <h5 class="text-left">{{ item.variant.product.product_name }}</h5>
+                                              <span>
+                                                  {% if offer %}
+                                                  <h5 class="text-left">
+                                                      <del style="color: rose ;">₹{{ item.variant.product.product_price }}</del>
+                                                    </h5>
+                                                    <h5 class="text-right">
+                                                        <span  style="color: black;">₹{{ item.variant.product.product_price|sub:item.variant.product.offer.discount_amount }}</span>
+                                                  </h5>
+                                                  {% else %}
+                                                  <h5 class="text-right">₹{{ item.variant.product.product_price }}</h5>
+                                                  {% endif %}
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </li>
+                                  <li>
+                                      <h5 class="text-left">Subtotal</h5>
+                                      <h5 class="text-right" ><span id="sub_total">₹ {{ total_price }}</span></h5>
+                                  </li>
+                                  <li>
+                                    <h5 class="text-left">tax</h5>
+                                    <h5 class="text-right" ><span >₹ {{ tax }}</span></h5>
+                                </li>
+                                  {% endfor %}
+                                  {% if coupon  %}
+                                  <li>
+                                      <h5 class="text-left">Discount</h5>
+                                      <h5 class="text-right"><span id="discount">₹ {{coupon}}</span></h5>
+                                  </li>
+                                  <li>
+                                    <h5 class="text-left">Total</h5>
+                                      <span id="grand_total"> <h5 class="text-right">₹{{ grand_total|sub:coupon  }}</h5></span>
+                                  </li>
+                                  {% else %}
+                                  <li>
+                                      <h5 class="text-left">Total</h5>
+                                      <span id="grand_total"> <h5 class="text-right">₹{{ grand_total }}</h5></span>
+                                  </li>
+                                  {% endif %}
+                              </ul>
+                              <br>
+                            
+                          </div>
+                          <div>
+                              <h5>Payment methods</h5>
+                              <div class="button-container">
+                                  <input type="radio" id="cod" name="payment" data-payment-method="cod" role="button">
+                                  <label for="cod"><h5>COD</h5></label>
+                                  <br>
+                                  <input type="radio" id="razorpay" name="payment" data-payment-method="razorpay" role="button">
+                                  <label for="razorpay"> <h5>Razor pay</h5></label>
+                              </div>
+                              <button type="submit" style="margin-left: 320px;" class="btn_3 purchase placeorder " id="orderform">
+                                  <span>Place Order</span>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('.purchase').click(function(e) {
+          e.preventDefault();
+
+          var fname = $("[name='first_name']").val();
+          var phone = $("[name='phone']").val();
+          var email = $("[name='email']").val();
+          var couponOrder = $("[name='couponcheck']").val();
+          var order_note = $("[name='ordernote']").val();
+          var token = $("[name='csrfmiddlewaretoken']").val();
+          var selectedAddress = $("input[name='address']:checked").val();
+          var paymentMethod = $("input[type='radio'][data-payment-method]:checked").data('payment-method');
+
+
+          if (!selectedAddress) {
+              Swal.fire("Alert!", "Address field is mandatory!", "error");
+              console.log('Address field is empty');
+              return false;
+          }if (!paymentMethod) {
+                Swal.fire("Alert!", "payment field is mandatory!", "error");
+                console.log('Address field is empty');
+                return false;    
+          } else {
+              var data = {
+
+                  "payment_method": paymentMethod,
+                 // "couponOrder": couponOrder,
+                  "order_note": order_note,
+                  "address": selectedAddress,
+                  "csrfmiddlewaretoken": token
+              };
+
+              console.log(data, '11111111111111111111111');
+
+              // Check the selected payment method and execute the corresponding AJAX request
+              if (paymentMethod === "wallet") {
+                  $.ajax({
+                      method: "POST",
+                      url: "{% url 'placeorder' %}",
+                      data: data,
+                      dataType: 'json'
+                  }).done(function(response) {
+                      console.log(response);
+
+                      if (response.status === 'Your wallet amount is very low') {
+                          swal("Error!", response.status, "error");
+                          $('.placeorder').load(location.href + " .placeorder");
+                          window.location.href = '/checkout/checkout/';
+                        }else if (response.status === 'Out Of Stock!!') {
+                            swal("Error!", response.status, "error");
+                            $('.placeorder').load(location.href + " .placeorder");
+                            //await new Promise(resolve => setTimeout(resolve, 5000));
+                            
+                            window.location.href = '/checkout/checkout/';
+                      } else if (response.status === 'Your order has been placed successfully') {
+                          swal("Congratulations!", response.status, "success");
+                          $('.placeorder').load(location.href + " .placeorder");
+                          window.location.href = '/';
+                      } else {
+                          Swal.fire("Error!", response.status, "error");
+                          $('.placeorder').load(location.href + " .placeorder");
+                          window.location.href = '/';
+                      }
+                      
+                  }).fail(function(xhr, errmsg, err) {
+                      alert('Error: ' + errmsg);
+                      console.log(xhr.responseText);
+                      console.log(err);
+                  });
+              } else if (paymentMethod === "cod") {
+                $.ajax({
+                    method: "POST",
+                    url: "{% url 'placeorder' %}",
+                    data: data,
+                    dataType: 'json'
+                }).done(function(response) {
+                    console.log(response);
+
+                    if (response.status === 'Your Order Has Been Failed Try Again!!') {
+                        Swal.fire("Error!", response.status, "error");
+                        $('.placeorder').load(location.href + " .placeorder");
+                    } else if (response.status === 'Your order has been placed successfully') {
+                      Swal.fire("Congratulations!", response.status, "success");
+                        $('.placeorder').load(location.href + " .placeorder");
+                    } else {
+                        Swal.fire("Error!", response.status, "error");
+                        $('.placeorder').load(location.href + " .placeorder");
+                    }
+                    window.location.href = '/';
+                }).fail(function(xhr, errmsg, err) {
+                    alert('Error: ' + errmsg);
+                    console.log(xhr.responseText);
+                    console.log(err);
+                });
+            } 
+              
+              else if (paymentMethod === "razorpay") {
+                  // The Razorpay code from the second script goes here
+                  $.ajax({
+                    method:"GET",
+                    url:"{% url 'razarpaycheck' %}",
+                    success: function(response) {
+                     var options = {
+                       "key": "rzp_test_rP5xeGSBX2fudq", // Enter the Key ID generated from the Dashboard
+                       "amount": response.total_price*100,// Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                       //"amount": 1*100,//response.total_price * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                       "currency": "INR",
+                       "name": "aranoz",
+                       "description": "Thank you for buying with us",
+                       "image": "https://example.com/your_logo",
+                       //"order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                       "handler": function (responseb){
+                        // alert(responseb.razorpay_payment_id);
+                           data = {
+                             
+                             "payment_method" : "razorpay",
+                             "payment_id" : responseb.razorpay_payment_id,
+                             "address": selectedAddress,
+                             csrfmiddlewaretoken: token
+                             
+                           }
+
+                             $.ajax({
+                               method:"POST",
+                               url:"{% url 'placeorder' %}",
+                               data: data,
+                               success: function (responsec) {
+                                 
+                                 Swal.fire("Congratulations!", responsec.status,"success" ).then((value) => {
+                                    
+                                 });
+                                 window.location.href = '/'
+                               }
+         
+                           });
+                       },
+                       "prefill": {
+                           "name": fname,
+                           "email" : email,
+                           'contact' : phone,
+                       },
+                       
+                       "theme": {
+                           "color": "#3399cc"
+                       }
+                   };
+              
+                   var rzp1 = new Razorpay(options);
+                   rzp1.on('payment.failed', function (response){
+                           alert(response.error.code);
+                           alert(response.error.description);
+                           alert(response.error.source);
+                           alert(response.error.step);
+                           alert(response.error.reason);
+                           alert(response.error.metadata.order_id);
+                           alert(response.error.metadata.payment_id);
+                   });
+                   rzp1.open();
+                     console.log(responsec);
+         
+                    }
+                 });
+                 
+              } 
+          }
+      });
+  });
+</script>  
+</main><!-- End .main -->
+
+
+{% endblock %}

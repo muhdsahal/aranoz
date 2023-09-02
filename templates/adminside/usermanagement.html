@@ -1,0 +1,108 @@
+{% extends 'adminside/basedashboard.html' %}
+{% block title %}User_management{% endblock %}
+{% load static %}
+{% block dashbody %}
+
+<div class="container-fluid">
+
+
+  <section class="content-main">
+
+    <div class="card mb-4">
+      <header class="card-header">
+        <div class="row gx-3">
+          <!-- Search Bar (Left Side) -->
+          <div class="col-lg-4 col-md-6">
+            <div class="input-group">
+              <div class="form-outline">
+                <form action="{% url 'user_sort' %}" method="POST">
+                  {% csrf_token %}
+                  <div class="input-group">
+                    <input type="text" placeholder="Search..." name="search" class="form-control" />
+                    <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i></button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sort Options (Right Side) -->
+          <div class="col-lg-8 col-md-6 d-flex justify-content-end">
+            <form id="user-status-form" method="post" action="{% url 'user_block_status' %}">
+              {% csrf_token %}
+              <div class="col-lg-2 col-6 col-md-3">
+                <select class="form-select" name="name" id="status-select" style="width: 130px;">
+                  <option value="">Status</option>
+                  <option value="Blocked">Blocked</option>
+                  <option value="Active">Active</option>
+                  <option value="All">All</option>
+                </select>
+              </div>
+              <input type="hidden" name="auto_submit" value="true">
+            </form>
+          </div>
+        </div>
+      </header>
+    </div>
+    
+      <!-- card-header end// -->
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr>
+                <td style="text-align: center;">{{user.id}}</td>
+                <td><b>{{ user.first_name }}</td>
+                <td><b>{{ user.username }}</td>
+                <td><b>{{ user.email }}</td>
+
+
+                <td>{% if user.is_active %}
+                  <b style="color: rgb(25, 228, 25);">active
+
+                    {% else %}
+                    <b style="color: red">Deactive
+                      {% endif %}
+                </td>
+
+                <td class="text-end">
+
+                  {% if user.is_active %}
+                  <a href="{% url 'blockuser' user.id %}" class="btn btn-md rounded font-sm"
+                    style="background-color: red; color: white;">Block</a>
+
+                  {% else %}
+                  <a href="{% url 'blockuser' user.id %}" class="btn btn-md rounded font-sm"
+                    style="background-color: green; color: white;">Unblock</a>
+
+                  {% endif %}
+                 
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <!-- table-responsive //end -->
+      </div>
+      <!-- card-body end// -->
+    </div>
+    <!-- card end// -->
+
+  </section>
+
+
+</div>
+
+{% endblock %}

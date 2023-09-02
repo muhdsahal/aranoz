@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block title %}
+  product details
+{% endblock %}
+{% load static %}
+{% block body %}
+{% load mathfilters %}
+  <!-- ================Single Product Area ================= -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+  <!-- ================End Home Banner Area ================= -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- ================Single Product Area ================= -->
+  <style>
+    /* Style for the product navigation dots */
+.product-nav-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.product-nav-dots a {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 0 5px;
+  text-indent: -9999px; /* Hide text content */
+  overflow: hidden; /* Hide any overflow from color code background */
+}
+
+/* Optional hover effect */
+.product-nav-dots a:hover {
+  transform: scale(1.2);
+}
+
+
+  </style>
+  <div class="product_image_area section_padding product_data ">
+    <div class="container">
+      <div class="row s_product_inner justify-content-between">
+        <div class="col-lg-7 col-xl-7">
+          <div class="product_slider_img">
+            <div class="owl-carousel owl-theme" id="vertical-carousel">
+              {% for i in variant  %}
+              <div data-thumb="{{ i.image.url }}" class="item" style="height: 350px margin-bottom: 0px;">
+                <img src="{{ i.image.url  }}">
+              </div>
+              
+              {% endfor %}
+            </div>
+          </div>
+          <div class="col-lg-12 col-xl-12 text-center mt-3">
+            <div class="carousel-navigation">
+                <button class="carousel-prev"><i class="fa fa-chevron-left"></i></button>
+                <button class="carousel-next"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </div>
+        </div>
+        <div class="col-lg-5 col-xl-4">
+          <div class="s_product_text">
+            <h2>{{  variant.0.variant.product.product_name }}</h2>
+            {% comment %} <h2>₹{{  variant.0.variant.product.product_price }}</h2> {% endcomment %}
+
+            {% if variant.0.variant.product.offer %}
+            <h2><del style="color: rose;">₹{{ variant.0.variant.product.product_price }} </del>  <span style="color:white;">--</span> <span style="color: black;">₹{{ variant.0.variant.product.product_price|sub:variant.0.variant.product.offer.discount_amount}}</span>
+              </h2>
+              {% else %}
+              <h2>₹{{ variant.0.variant.product.product_price }}</h2>
+              {% endif %}
+
+            <h3><span>Category   : </span>{{  variant.0.variant.product.category }}</h3>
+            <h3><span>Brand : Aranoz</span></h3>
+            <h3><span>Availibility      :  </span>{{ variant.0.variant.quantity }}</h3>
+            
+              
+
+              
+              <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                  <h3>Color:</h3>
+                {% for i in color %}
+                
+                <div class="product-nav product-nav-dots">
+  
+                    <a href="{% url 'product_details' i.variant.product.id i.variant.id %}"
+                        id="colorLink{{ forloop.counter }}"><span class="sr-only"></span></a>
+                    <script>
+                        var colorCode = "{{ i.variant.color.color_code }}";
+                        var colorLink = document.getElementById("colorLink{{ forloop.counter }}");
+                        colorLink.style.background = colorCode;
+                    </script>
+  
+                </div><!-- End .product-nav -->
+                {% endfor %}
+            </div>
+            
+            
+            <p>{{ variant.0.variant.product.product_description  }}</p>
+
+        
+             
+            <div class="card_area d-flex justify-content-between align-items-center">
+              <div class="product_count">
+                <span class="inumber-decrement"><i class="ti-minus"></i></span>
+                <input  readonly class="input-number" id="quantityCheck" type="number" value="1" min="1" max="{{ variant.0.variant.quantity }}" />
+
+                <span class="number-increment"><i class="ti-plus"></i></span>
+              </div>
+              <input type="hidden" value="{{prod.id}}" class="prod_id" >
+              <button class="btn_3 addToCartBtn add_cart "data-product_id="{{ prod.id }}" >{% if variant.0.variant.quantity > 0  %}Add to cart {% else %}Out of stok{% endif %}</button>        
+               
+              <a href="#" type="submit" data-product_id="{{ prod.id }}" class="like_us wishlist-icon"><i class="ti-heart"></i></a>
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ================End Single Product Area ================= -->
+
+  <!-- ================Product Description Area ================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script>
+    $('.add_cart').click(function (e) {
+      e.preventDefault()
+      prod_id
+    
+      var prod_id = $(this).closest('.product_data').find('.prod_id').val()
+      var product_qty = $('.input-number').val()
+    
+      //var selected_size = $(this).closest('.product_data').find('#size').val(); // Get the selected size value
+      console.log(prod_id, 'daxoooooo')
+      console.log(product_qty, 'daxoooooo')
+    
+      $.ajax({
+        method: 'POST',
+        url: "{% url 'add_cart' %}",
+        data: {
+          product_qty: product_qty,
+          prod_id: prod_id,
+          //'size': selected_size, // Include the selected size in the data
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+    
+        success: function (response) {
+          console.log(response)
+    
+          if (response.status === 'No such prodcut found' || response.status === 'Only few quantity available' || response.status === 'Product already in cart') {
+            Swal.fire('Error!', response.status, 'error')
+            $('.cartdata').load(location.href + ' .cartdata')
+          } else if (response.status === 'Product added successfully') {
+            Swal.fire('', response.status, 'success')
+            $('.cartdata').load(location.href + ' .cartdata')
+          } else if (response.status === 'you are not login please Login to continue') {
+            Swal.fire('', response.status, 'warning')
+            $('.cartdata').load(location.href + ' .cartdata')
+          } else if (response.status === 'Sorry! this variant not available') {
+            Swal.fire('', response.status, 'warning')
+            $('.cartdata').load(location.href + ' .cartdata')
+          } else {
+            Swal.fire('Error!', response.status, 'error')
+            $('.cartdata').load(location.href + ' .cartdata')
+          }
+        }
+      })
+    })
+  </script>
+ 
+
+  <script>
+    $(document).ready(function () {
+      var owl = $('#vertical-carousel');
+      owl.owlCarousel({
+          items: 1,
+          loop: true,
+          nav: false
+      });
+  
+      $('.carousel-prev').click(function () {
+          owl.trigger('prev.owl.carousel');
+      });
+  
+      $('.carousel-next').click(function () {
+          owl.trigger('next.owl.carousel');
+      });
+  });
+  
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      $('.wishlist-icon').click(function (e) {
+        e.preventDefault()
+    
+        var product_id = $(this).data('product_id')
+        console.log(product_id, 'reeeeeeeeeeeeeeeeee')
+    
+        $.ajax({
+          method: 'POST',
+          url: "{% url 'add_wishlist' %}", // Make sure this URL is correctly generated
+          data: {
+            prod_id: product_id,
+            csrfmiddlewaretoken: '{{ csrf_token }}' // Make sure this token is correctly rendered
+          },
+          success: function (response) {
+            console.log(response)
+    
+            // Assuming the server sends JSON response with a 'status' field
+            if (response.status === 'product already in wishlist') {
+              Swal.fire('Error!', response.status, 'error') // Using SweetAlert 2
+            } else if (response.status === 'product added to wishlist') {
+              Swal.fire('', response.status, 'success') // Using SweetAlert 2
+            } else if (response.status === 'login and continue') {
+              Swal.fire('', response.status, 'warning') // Using SweetAlert 2
+            } else if (response.status === 'something went wrong ,reload page') {
+              Swal.fire('', response.status, 'warning') // Using SweetAlert 2
+            } else {
+              Swal.fire('Error!', response.status, 'error') // Using SweetAlert 2
+            }
+          },
+          error: function (xhr, status, error) {
+            console.log(xhr.responseText) // Log the detailed error response
+            Swal.fire('Error!', 'An error occurred. Please try again later.', 'error') // Using SweetAlert 2
+          }
+        })
+      })
+    })
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const quantityCheck = document.getElementById("quantityCheck");
+    const maxQuantity = parseInt("{{ variant.0.variant.quantity }}");
+
+    quantityCheck.addEventListener("change", function () {
+      const inputValue = parseInt(quantityCheck.value);
+
+      if (inputValue === maxQuantity) {
+        Swal.fire({
+          icon: "info",
+          title: "Maximum Quantity Reached",
+          text: "The quantity selected is at its maximum.",
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+  });
+</script>
+
+    
+{% endblock %}

@@ -1,0 +1,380 @@
+
+{% extends 'base.html' %}
+{% block title %}aranoz{% endblock %}
+{% load static %}
+{% block body %}
+{% load mathfilters %}
+<!-- Include the nouislider CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css" />
+<!-- Include the nouislider JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.js"></script>
+
+
+<style>
+  /* Custom CSS to add distance between the navbar and cards */
+  .custom-card-container {
+    margin-top: 50px;
+  }
+</style>
+<style>
+    /* Style for the Price Filter widget section */
+.left_widgets {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.l_w_title h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.widgets_inner {
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.range_item {
+    margin-top: 20px;
+}
+
+.js-range-slider {
+    width: 100%;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.price_text p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.price_value {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.js-input-from,
+.js-input-to {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    text-align: center;
+    margin: 0 5px;
+}
+.sor{
+    display: flex;
+justify-content: space-between;
+    flex-direction: column;
+}
+</style>
+<!--================Category Product Area =================-->
+<section class="cat_product_area section_padding">
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-3">
+              <div class="left_sidebar_area">
+                  <aside class="left_widgets p_filter_widgets">
+                      <div class="l_w_title">
+                          <h3>Browse Categories</h3>
+                      </div>
+                      <div class="widgets_inner">
+                          <ul class="list">
+                            {% for i in cate %}
+                            <li>
+                                <a href="{% url 'cat_detail' i.id %}"><h5>{{i.categories}}</h5></a>
+                                <!--<span>(250)</span>-->
+                            </li>
+                            {% endfor %} 
+                          </ul>
+                      </div>
+                  </aside>
+                  <aside>
+                    <div class="sor">
+                      <a href="{% url 'product_sort' 6 %}"><button class="btn_1">offer</button></a><br>
+                      <br>
+                      <a href="{% url 'product_sort' 1 %}"><button class="btn_1"> all</button></a> <br>
+                      <a href="{% url 'product_sort' 2 %}"><button class="btn_1">A to Z</button></a><br>
+                      <a href="{% url 'product_sort' 3 %}"><button class="btn_1">Z to A</button></a><br>
+                      <a href="{% url 'product_sort' 4 %}"><button class="btn_1">Low to High</button></a><br>
+                      <a href="{% url 'product_sort' 5 %}"><button class="btn_1">High To Low</button></a><br>
+
+                    </div>  
+                      
+                        
+                    
+                  </aside> 
+                  
+              </div>
+          </div>
+          <div class="col-lg-9">
+              <div class="row">
+                  <div class="col-lg-12">
+                      <div class="product_top_bar d-flex justify-content-between align-items-center">
+                          <div class="single_product_menu">
+                              <p><span>10000 </span> Prodict Found</p>
+                          </div>
+                        <div class="single_product_menu d-flex">
+                            <form action="{% url 'search_product' %}" method="GET" class="input-group">
+                                <input type="text" class="form-control" name="keyword" placeholder="Search" aria-label="Search">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-outline-secondary" id="searchButton">
+                                        <i class="ti-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                      </div>
+                  </div>
+              </div>
+              <section style="background-color: white;">
+                <div class="container py-5 custom-card-container">
+                  <div class="row">
+                    {% if variant_images %}
+                    {% for c in variant_images %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                    </div>
+                    <div class="row">
+                    {% endif %}
+                    <div class="col-md-4 mb-4">
+                      <div class="card">
+                        <div class="position-relative">
+                          <a href="{% url 'product_details' c.variant.product.id c.variant.id %}">
+                            <img src="{{ c.image.url }}" class="card-img-top" alt="img" />
+                          </a>
+                          
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">{{ c.variant.product.product_name }}</h5>
+                          {% if c.variant.product.offer %}
+                          <h6><del style="color: brown;">₹{{ c.variant.product.product_price }} </del>  <span style="color:white;">--</span> <span style="color: black;">₹{{c.variant.product.product_price|sub:c.variant.product.offer.discount_amount}}</span>
+                          </h6>
+                          {% else %}
+                          <h6>₹{{ c.variant.product.product_price }}</h6>
+                          {% endif %}
+                          <div class="d-flex justify-content-between mt-3">
+
+                            <button  class="btn_3 addToCartBtn" data-product_id ="{{ c.variant.id }}">{% if c.variant.quantity > 0  %}Add to cart {% else %}Out of stock{% endif %}</button> 
+                            <div class="icon-overlay">
+                                <a href="" data-product_id ="{{ c.variant.id }}" class="wishlist-icon">
+                                   <img src="{% static 'img/heart.png'%}" alt="img"> </i>
+                                </a>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    
+                  </div>
+                </div>
+              </section>
+             <!-- ... -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if products_page.has_previous %}
+                        <a href="?page={{ products_page.previous_page_number }}{% if sort_option %}&sort={{ sort_option }}{% endif %}">
+                            &laquo; previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ products_page.number }} of {{ products_page.paginator.num_pages }}
+                    </span>
+            
+                    {% if products_page.has_next %}
+                    <a class="next-link" href="?page={{ products_page.next_page_number }}{% if sort_option %}&sort={{ sort_option }}{% endif %}">
+                        next &raquo;</a>
+                    <a class="last-link" href="?page={{ products_page.paginator.num_pages }}{% if sort_option %}&sort={{ sort_option }}{% endif %}">
+                        last &raquo;</a>
+                    {% endif %}
+        
+                </span>
+            </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    $('.wishlist-icon').click(function (e) {
+        e.preventDefault();
+
+        var product_id = $(this).data('product_id');
+
+        $.ajax({
+            method: "POST",
+            url: "{% url 'add_wishlist' %}",
+            data: {
+                'prod_id': product_id,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (response) {
+                console.log(response);
+
+                if (response.status === 'product already in wishlist') {
+                    Swal.fire("Error!", response.status, "error");
+                } else if (response.status === 'product added to wishlist') {
+                    Swal.fire("", response.status, "success");
+                } else if (response.status === 'login and continue') {
+                    Swal.fire("", response.status, "warning");
+                } else if (response.status === 'something went wrong ,reload page') {
+                    Swal.fire("", response.status, "warning");
+                } else {
+                    Swal.fire("Error!", response.status, "error");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText); // Log the detailed error response
+                Swal.fire("Error!", "An error occurred. Please try again later.", "error");
+            }
+        });
+    });
+</script>
+
+
+
+
+<script>
+    $('.addToCartBtn').click(function (e) {
+        e.preventDefault();
+
+        var product_id = $(this).data('product_id');
+        var product_qty = 1;
+        console.log(product_id, product_qty)
+       
+        //var selected_size = $(this).closest('.product_data').find('#size').val(); // Get the selected size value
+        console.log(product_id,'daxoooooo')
+        console.log(product_qty,'daxoooooo')
+      
+        $.ajax({
+            method: "POST",
+            url: "{% url 'add_cart' %}",
+            data: {
+                'product_qty': product_qty,
+                'prod_id': product_id,
+                //'size': selected_size, // Include the selected size in the data
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            
+            success: function (response) {
+
+              console.log(response);
+
+
+
+              //if (response.status === 'No such prodcut found' || response.status === 'Only few quantity available' || response.status === 'product already in cart' ) {
+                 // Swal.fire("Error!", response.status, "error");
+                  //$('.cartdata').load(location.href + " .cartdata");
+                if (response.status === 'Product added successfully') { 
+                  Swal.fire("", response.status, "success");
+                  $('.cartdata').load(location.href + " .cartdata");
+              } else if (response.status === 'you are not login please Login to continue') {
+                  Swal.fire("", response.status, "warning");
+                  $('.cartdata').load(location.href + " .cartdata");
+              } 
+              else if (response.status === 'Sorry! this variant not available') {
+                  Swal.fire("", response.status, "warning");
+                  $('.cartdata').load(location.href + " .cartdata");
+              } 
+              else {
+                  Swal.fire("Error!", response.status, "error");
+                  $('.cartdata').load(location.href + " .cartdata");
+              }
+          }
+        });
+    });
+</script>
+
+<script>
+$(document).ready(function() {
+    // Attach click event handlers to each sorting option link
+    $('#sort-all').click(function(e) {
+        e.preventDefault();
+        sortProducts('all');
+    });
+
+    $('#sort-atoz').click(function(e) {
+        e.preventDefault();
+        sortProducts('atoz');
+    
+    });
+
+    $('#sort-ztoa').click(function(e) {
+        e.preventDefault();
+        sortProducts('ztoa');
+    });
+
+    $('#sort-lowtohigh').click(function(e) {
+        e.preventDefault();
+        sortProducts('lowtohigh');
+    });
+
+    $('#sort-hightolow').click(function(e) {
+        e.preventDefault();
+        sortProducts('hightolow');
+    });
+	// Add click event handler to the search button
+	$('#search-button').click(function(e) {
+		e.preventDefault();
+		var searchQuery = $('#search-input').val();
+		sortProducts('search', searchQuery);
+	});
+    // Function to make AJAX request and update product list
+	function sortProducts(sortOption, searchQuery) {
+		$.ajax({
+			url: "{% url 'product_list' %}",  // Replace with the actual URL for sorting and searching
+			type: 'GET',
+			data: { sort: sortOption, search: searchQuery },
+			success: function(response) {
+				// Update the product list with the sorted/searched data
+				//$('.isotope-grid').replaceWith(response.html);
+				//$('#sorting-part').html(response.html);
+				//$('#sorting-part').html(response);
+				$('.cat_product_').replaceWith(response.html);
+			},
+			error: function(xhr, status, error) {
+				// Handle error if necessary
+				console.log(error);
+                
+			}
+		});
+	}
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $("#slider-range").ionRangeSlider({
+      type: "double",
+      min: 0,
+      max: 1000,
+      from: 0,
+      to: 283,
+      postfix: "tk.",
+      onFinish: function (data) {
+        $(".js-input-from").val(data.from);
+        $(".js-input-to").val(data.to);
+      },
+    });
+  });
+</script>
+
+
+{% endblock %}
+
