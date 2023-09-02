@@ -27,84 +27,85 @@ import random
 import re
 
 #adminde
-# def admin_signup(request):
+def admin_signup(request):
 
-#     if request.method == 'POST':
+    if request.method == 'POST':
 
-#         get_otp=request.POST.get('otp')
-#         if get_otp:
-#             get_email=request.POST.get('email')
-#             user=User.objects.get(email=get_email)
+        get_otp=request.POST.get('otp')
+        if get_otp:
+            get_email=request.POST.get('email')
+            user=User.objects.get(email=get_email)
 
-#             if int(get_otp)==UserOTP.objects.filter(user=user).last().otp:
-#                 user.is_active=True
-#                 user.save()
-#                 auth.login(request,user)
-#                 UserOTP.objects.filter(user=user).delete()
-#                 return redirect('dashboard')
-#             else:
-#                 messages.warning(request,f'you entered wrong otp')
-#                 return render(request,'adminside/admin_signup.html',{'otp':True,'user':user})
-#         else:
-#             username=request.POST.get('username')
-#             email=request.POST.get('email')
-#             password1=request.POST('password1')
+            if int(get_otp)==UserOTP.objects.filter(user=user).last().otp:
+                user.is_active=True
+                user.save()
+                auth.login(request,user)
+                UserOTP.objects.filter(user=user).delete()
+                return redirect('dashboard')
+            else:
+                messages.warning(request,f'you entered wrong otp')
+                return render(request,'adminside/admin_signup.html',{'otp':True,'user':user})
+        else:
+            username=request.POST.get('username')
+            email=request.POST.get('email')
+            password1=request.POST('password1')
 
-#             context={
-#                 'pre_username':username,
-#                 'pre_email':email,
-#                 'pre_password':password1,
-#             }
+            context={
+                'pre_username':username,
+                'pre_email':email,
+                'pre_password':password1,
+            }
 
 
-#             if username.strip()=='' or password1.strip()=='' or email.strip()=='':
-#                 messages.error(request,'field cannot empty !')
-#                 return render(request,'adminside/admin_signup.html',context)
+            if username.strip()=='' or password1.strip()=='' or email.strip()=='':
+                messages.error(request,'field cannot empty !')
+                return render(request,'adminside/admin_signup.html',context)
             
-#             elif  User.objects.filter(username=username):
-#                 messages.error(request,'username already exist !')
-#                 context['pre_username']=''
-#                 return render(request,'adminside/admin_signup.html',context)
+            elif  User.objects.filter(username=username):
+                messages.error(request,'username already exist !')
+                context['pre_username']=''
+                return render(request,'adminside/admin_signup.html',context)
             
-#             elif not re.match(r'^[a-zA-Z\s]*$',username):
-#                 messages.error(request,'username  should only alphabets !')
-#                 context['pre_username']=''
-#                 return render(request,'adminside/admin_signup.html',context)
+            elif not re.match(r'^[a-zA-Z\s]*$',username):
+                messages.error(request,'username  should only alphabets !')
+                context['pre_username']=''
+                return render(request,'adminside/admin_signup.html',context)
             
-#             elif User.objects.filter(email=email):
-#                 messages.error(request,'email is already exist !')
-#                 context['pre_email']=''
-#                 return render(request,'adminside/admin_signup.html',context)
+            elif User.objects.filter(email=email):
+                messages.error(request,'email is already exist !')
+                context['pre_email']=''
+                return render(request,'adminside/admin_signup.html',context)
             
-#             email_check=validateemail(email)
-#             if email_check is False:
-#                 messages.error(request,'email not valid')
-#                 context['pre_email']=''
-#                 return render(request,'adminside/admin_signup.html',context)
+            email_check=validateemail(email)
+            if email_check is False:
+                messages.error(request,'email not valid')
+                context['pre_email']=''
+                return render(request,'adminside/admin_signup.html',context)
 
-#             password_check=validatepassword(password1)
-#             if password_check is False:
-#                 messages.error(request,'password is invalid !')
-#                 context['pre_password']=''
-#                 return render(request,'adminside/admin_signup.html',context)
+            password_check=validatepassword(password1)
+            if password_check is False:
+                messages.error(request,'password is invalid !')
+                context['pre_password']=''
+                return render(request,'adminside/admin_signup.html',context)
             
-#             user=User.objects.create_user(username=username,email=email,password=password1)
-#             user.is_active=False
-#             user.is_superuser=True
-#             user.save()
-#             user_otp=random.randint(100000,999999)
-#             UserOTP.objects.create(user=user,otp=user_otp)
-#             mess=f' Hello \t {user.username}, \n your OTP to varifie your account for Aranoz is {user_otp} \n  Thank You !'
-#             send_mail(
-#                 'Welcome tp Aranoz varifie your OTP',
-#                 mess,
-#                 settings.EMAIL_HOST_USER,
-#                 [user.email],
-#                 fail_silently=False
-#                 )
-#             return render(request,'adminside/admin_signup.html',{'otp':True,'user':user})
+            user=User.objects.create_user(username=username,email=email,password=password1)
+            user.is_active=False
+            user.is_superuser=True
+            user.is_staff= True
+            user.save()
+            user_otp=random.randint(100000,999999)
+            UserOTP.objects.create(user=user,otp=user_otp)
+            mess=f' Hello \t {user.username}, \n your OTP to varifie your account for Aranoz is {user_otp} \n  Thank You !'
+            send_mail(
+                'Welcome tp Aranoz varifie your OTP',
+                mess,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False
+                )
+            return render(request,'adminside/admin_signup.html',{'otp':True,'user':user})
 
-#     return render (request,'adminside/admin_signup.html')
+    return render (request,'adminside/admin_signup.html')
 
 #adminlogin
 def admin_login1(request):
