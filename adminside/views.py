@@ -26,7 +26,7 @@ from django.conf import settings
 import random
 import re
 
-#adminde
+#si
 def admin_signup(request):
 
     if request.method == 'POST':
@@ -48,7 +48,7 @@ def admin_signup(request):
         else:
             username=request.POST.get('username')
             email=request.POST.get('email')
-            password1=request.POST('password1')
+            password1=request.POST.get('password1')
 
             context={
                 'pre_username':username,

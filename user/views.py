@@ -103,7 +103,7 @@ def user_signup(request):
                 fail_silently=False
             )
             return render(request, 'user/signup.html', {'otp': True, 'user': user})
-    return render(request, 'user/signup.html')
+    return render(request, 'user/signup.html', context)
 
 
 def validateemail(email):
