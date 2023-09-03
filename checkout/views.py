@@ -234,7 +234,7 @@ def placeorder(request):
 
             return JsonResponse({'status': "Your order has been placed successfully"})
            
-    return redirect ('orders')
+    return redirect ('home')
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 @login_required(login_url='user_login1')
