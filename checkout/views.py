@@ -198,7 +198,6 @@ def placeorder(request):
         session_coupon=request.session.get('coupon_session')
         cart_total_price = cart_total_price - session_coupon
         neworder.total_price = cart_total_price + tax
-        print(cart_total_price,'rrrrrrrrrrrrrrrrrrrrrrr')
         trackno = random.randint(1111111, 9999999)
         while Order.objects.filter(tracking_no=trackno).exists():
             trackno = random.randint(1111111, 9999999)
@@ -232,7 +231,16 @@ def placeorder(request):
             del request.session['coupon_session']
             del request.session['coupon_id']
 
-            return JsonResponse({'status': "Your order has been placed successfully"})
+            success_message = "Your order has been placed successfully."
+            if payment_mode == 'cod':
+                success_message += " You have chosen Cash on Delivery."
+            else:
+                payment_mode == 'razorpay'
+                success_message += " You have chosen Razorpay."
+
+            return JsonResponse({'status': success_message})
+
+            # return JsonResponse({'status': "Your order has been placed successfully"})
            
     return redirect ('home')
 
