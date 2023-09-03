@@ -153,41 +153,42 @@ def checkout(request):
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 @login_required(login_url='user_login1')
+from django.http import JsonResponse
+
 def placeorder(request):
-
     if request.method == 'POST':
-        user=request.user
+        user = request.user
         coupon = request.POST.get('couponOrder')
-        address_id=request.POST.get('address')
+        address_id = request.POST.get('address')
         if address_id is None:
-            messages.error(request,'Address Field Is Mandatory!')
+            messages.error(request, 'Address Field Is Mandatory!')
             return redirect('checkout')
-        
-        address=Address.objects.get(id=address_id)
 
-        neworder =Order()
-        neworder.user=user
+        address = Address.objects.get(id=address_id)
+
+        neworder = Order()
+        neworder.user = user
         neworder.address = address
-        neworder.payment_mode =request.POST.get('payment_method')
+        neworder.payment_mode = request.POST.get('payment_method')
         neworder.message = request.POST.get('order_note')
-        session_coupon_id=request.session.get('coupon_id')
+        session_coupon_id = request.session.get('coupon_id')
 
-        if session_coupon_id!=None:
-            session_coupons =Coupon.objects.get(id=session_coupon_id)
+        if session_coupon_id is not None:
+            session_coupons = Coupon.objects.get(id=session_coupon_id)
         else:
             session_coupons = None
-               
+
         neworder.coupon = session_coupons
-        cart_items =Cart.objects.filter(user=request.user)
+        cart_items = Cart.objects.filter(user=request.user)
         cart_total_price = 0
         offer_total_price = 0
         tax = 0
         for item in cart_items:
             if item.variant.product.offer:
                 product_price = item.variant.product.product_price
-                cart_total_price += product_price * item.product_qty 
-                offer_total_price =item.variant.product.offer.discount_amount
-                offer_total_price = offer_total_price*item.product_qtyj
+                cart_total_price += product_price * item.product_qty
+                offer_total_price = item.variant.product.offer.discount_amount
+                offer_total_price = offer_total_price * item.product_qty
                 cart_total_price = cart_total_price - offer_total_price
                 tax = cart_total_price * 0.18
             else:
@@ -195,7 +196,7 @@ def placeorder(request):
                 cart_total_price += product_price * item.product_qty
                 tax = cart_total_price * 0.18
         neworder.tax = int(tax)
-        session_coupon=request.session.get('coupon_session')
+        session_coupon = request.session.get('coupon_session')
         cart_total_price = cart_total_price - session_coupon
         neworder.total_price = cart_total_price + tax
         trackno = random.randint(1111111, 9999999)
@@ -210,22 +211,21 @@ def placeorder(request):
         neworder.save()
 
         for item in cart_items:
-            
             OrderItem.objects.create(
                 order=neworder,
                 variant=item.variant,
                 price=item.variant.product.product_price,
-                offer_amount = item.variant.product.offer,
+                offer_amount=item.variant.product.offer,
                 quantity=item.product_qty,
-                
             )
-            
-            product=Variant.objects.filter(id=item.variant.id).first()
+
+            product = Variant.objects.filter(id=item.variant.id).first()
             product.quantity -= item.product_qty
             product.save()
-            # Delete the cart items after the order is placed 
-            cart_items.delete()
-        
+
+        # Delete the cart items after the order is placed
+        cart_items.delete()
+
         payment_mode = request.POST.get('payment_method')
         if payment_mode == 'cod' or payment_mode == 'razorpay':
             del request.session['coupon_session']
@@ -235,14 +235,14 @@ def placeorder(request):
             if payment_mode == 'cod':
                 success_message += " You have chosen Cash on Delivery."
             else:
-                payment_mode == 'razorpay'
                 success_message += " You have chosen Razorpay."
 
+            # Return a JSON response indicating success
             return JsonResponse({'status': success_message})
 
-            # return JsonResponse({'status': "Your order has been placed successfully"})
-           
-    return redirect ('home')
+    # Redirect to the home page for GET requests or if the order placement fails
+    return redirect('home')
+
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 @login_required(login_url='user_login1')
