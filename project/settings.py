@@ -166,11 +166,20 @@ MESSAGE_TAGS = {
 }
 
 
-#Manually added email configuration
-EMAIL_BACKEND = Config('EMAIL_BACKEND')
-EMAIL_HOST = Config('EMAIL_HOST')
+# #Manually added email configuration
+# EMAIL_BACKEND = Config('EMAIL_BACKEND')
+# EMAIL_HOST = Config('EMAIL_HOST')
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = Config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = Config('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = Config('DEFAULT_FROM_EMAIL')
+
+SECRET_KEY = 'django-insecure-%_ya@c)#$ae5^8o0kvv#c1r6ell_nv3f(_5dimlatgl&+_ptll'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = Config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = Config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = Config('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_USER = 'sahalshalu830@gmail.com' 
+EMAIL_HOST_PASSWORD = 'ehmxvftwixlawqvd'
+DEFAULT_FROM_EMAIL = 'sahalshalu830@gmail.com'
