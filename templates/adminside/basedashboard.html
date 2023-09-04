@@ -10,7 +10,8 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'images/icons/icon.png' %}" />
   <link rel="stylesheet" href="{% static 'asset1/css/styles.min.css' %}" />
   <link rel="stylesheet" href="{% static 'asset1/css/styles.css' %}" />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+ 
   
   
 </head>
@@ -271,7 +272,6 @@
 
           <ul class="navbar-nav">
             <p style="color: rgb(255, 255, 255);">
-              iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
             </p>
           </ul>
 
@@ -324,11 +324,14 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
 
-  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'asset1/libs/jquery/dist/jquery.min.js' %}"></script>
+
   {% for message in messages %}
       <script>
           document.addEventListener('DOMContentLoaded', function() {
-              Swal.fire({
+              Swal({
                   text: "{{ message }}",
                   timer: 5000, // Adjust the timer to control how long each alert stays visible (in milliseconds)
               });
