@@ -335,7 +335,7 @@
   {% for message in messages %}
       <script>
           document.addEventListener('DOMContentLoaded', function() {
-              Swal({
+              Swal.fire({
                   text: "{{ message }}",
                   timer: 5000, // Adjust the timer to control how long each alert stays visible (in milliseconds)
               });
