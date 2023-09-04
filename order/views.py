@@ -445,7 +445,7 @@ def order_status_show(request):
         order = Order.objects.filter(order_status=4)
         context={'order':order,}   
         return render(request,'adminside/order.html',context)
-    if name == 'Camcelled':
+    if name == 'Cancelled':
         order = Order.objects.filter(order_status=5)
         context={'order':order,}   
         return render(request,'adminside/order.html',context)
