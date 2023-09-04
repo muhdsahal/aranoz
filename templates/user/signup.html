@@ -11,6 +11,7 @@
             <div class="col-lg-6 col-md-6">
                 <form class="row contact_form" action="{% url 'user_signup' %}" method="POST" novalidate="novalidate">
                     {% csrf_token %}
+                    <h3>Enter yor otp here</h3>
                     <div class="col-md-12 form-group p_star">
                         <input type="text" class="form-control" id="otp" name="otp">
                     </div>
