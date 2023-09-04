@@ -153,8 +153,6 @@ def checkout(request):
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 @login_required(login_url='user_login1')
-from django.http import JsonResponse
-
 def placeorder(request):
     if request.method == 'POST':
         user = request.user
