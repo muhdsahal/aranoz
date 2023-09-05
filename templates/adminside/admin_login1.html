@@ -31,7 +31,7 @@
                                         <input type="password" class="form-control" id="exampleInputPassword1" name="password">
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between mb-4">
-                                        {% comment %} <a class="text-primary fw-bold" href="{% url 'admin_forgotpassword' %}">Forgot Password ?</a> {% endcomment %}
+                                        <a class="text-primary fw-bold" href="{% url 'admin_forgotpassword' %}">Forgot Password ?</a>
                                     </div>
                                     <div class="mb-3">
                                         {% for message in messages %}
@@ -44,7 +44,7 @@
                                     
                                 </form>     
                                 <div class="d-flex align-items-center justify-content-center">
-                                    {% comment %} <a class="text-primary fw-bold ms-2" href="{% url 'admin_signup' %}">Create an account</a> {% endcomment %}
+                                    <a class="text-primary fw-bold ms-2" href="{% url 'admin_signup' %}">Create an account</a>
                                 </div>                           
                             </div>
                         </div>
