@@ -102,6 +102,7 @@ def user_signup(request):
     return render(request, 'user/signup.html')
 
 
+
 def validateemail(email):
     try:
         validate_email(email)
