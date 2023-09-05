@@ -172,7 +172,6 @@ def return_order(request,return_id):
     variant.save()
 
     order_item_id = Itemstatus.objects.get(id=6)
-    print(order_item_id,'kkkkkkkkkkkkkkkkkkkkkkkkk')
     orderitem_id.orderitem_status= order_item_id
     total_p = orderitem_id.price
     orderitem_id.save()
@@ -261,7 +260,7 @@ def order_cancel(request,cancel_id):
         orderitem =  orderitem_id
         view_id = orderitem_id.order.id
     except:
-        return redirect('userprofile')
+        return redirect('profile')
     if request.method == 'POST': 
         
         
