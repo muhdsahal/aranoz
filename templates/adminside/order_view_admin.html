@@ -2,6 +2,7 @@
 {% block title %}order_view{% endblock %}
 {% load static %}
 {% block dashbody %}
+{% load mathfilters %}
 <style>
     .status {
         display: flex;
@@ -92,7 +93,7 @@
                                 <td><strong>Coupon amount : {{ orderview.coupon.coupon_discount_amount  }}</td>
                                   {% endif %}
                             </tr>
-                            
+
                             <tr>
                                 {% for i in products  %}
                                 {% if i.offer_amount.discount_amount is null %}
