@@ -17,24 +17,33 @@ import random
 from django.core.mail import send_mail
 from django.conf import settings
 
+
+
 @csrf_protect
 def user_signup(request):
     if request.method == 'POST':
-        get_otp = request.POST.get('otp')
-        if get_otp:
+        if 'otp' in request.POST:
+            # User is submitting OTP
+            get_otp = request.POST.get('otp')
             get_email = request.POST.get('email')
-            user = User.objects.get(email=get_email)
-
-            if int(get_otp) == UserOTP.objects.filter(user=user).last().otp:
-                user.is_active = True
-                user.save()
-                auth.login(request, user)
-                UserOTP.objects.filter(user=user).delete()
-                return redirect('home')
-            else:
-                messages.warning(request, 'You entered a wrong OTP')
-                return render(request, 'user/signup.html', {'otp': True, 'user': user})
+            try:
+                user = User.objects.get(email=get_email)
+                latest_otp = UserOTP.objects.filter(user=user).last()
+                if latest_otp and int(get_otp) == latest_otp.otp:
+                    user.is_active = True
+                    user.save()
+                    auth.login(request, user)
+                    UserOTP.objects.filter(user=user).delete()
+                    messages.success(request, 'Account verified successfully!')
+                    return redirect('home')
+                else:
+                    messages.warning(request, 'You entered a wrong OTP')
+                    return render(request, 'user/signup.html', {'otp': True, 'user': user})
+            except User.DoesNotExist:
+                messages.error(request, 'User with this email does not exist.')
+                return redirect('signup')
         else:
+            # User is submitting registration data
             firstname = request.POST['fname']
             lastname = request.POST['lname']
             username = request.POST['username']
@@ -42,53 +51,39 @@ def user_signup(request):
             password1 = request.POST['password1']
             password2 = request.POST['password2']
 
-            context = {
-                'pre_firstname': firstname,
-                'pre_lastname': lastname,
-                'pre_username': username,
-                'pre_email': email,
-                'pre_password1': password1,
-                'pre_password2': password2
-            }
-
-            if username.strip() == '' or password1.strip() == '' or password2.strip() == '' or email.strip() == '' or firstname.strip() == '' or lastname.strip() == '':
+            # Basic field validations
+            if not all([firstname, lastname, username, email, password1, password2]):
                 messages.error(request, 'Fields cannot be empty!')
-                return render(request, 'user/signup.html', context)
+                return render(request, 'user/signup.html')
 
-            elif User.objects.filter(username=username).exists():
-                messages.error(request, 'Username already exists!')
-                context['pre_username'] = ''
-                return render(request, 'user/signup.html', context)
-
-            elif not re.match(r'^[a-zA-Z\s]*$', username):
+            # Username validation
+            if not re.match(r'^[a-zA-Z\s]*$', username):
                 messages.error(request, 'Username should only contain alphabets!')
-                context['pre_username'] = ''
-                return render(request, 'user/signup.html', context)
+                return render(request, 'user/signup.html')
 
-            elif User.objects.filter(email=email).exists():
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'Username already exists!')
+                return render(request, 'user/signup.html')
+
+            # Email validation
+            if User.objects.filter(email=email).exists():
                 messages.error(request, 'Email already exists!')
-                context['pre_email'] = ''
-                return render(request, 'user/signup.html', context)
+                return render(request, 'user/signup.html')
 
-            elif password1 != password2:
-                messages.error(request, 'Passwords do not match!')
-                context['pre_password1'] = ''
-                context['pre_password2'] = ''
-                return render(request, 'user/signup.html', context)
-
-            email_check = validate_email(email)
-            if email_check is False:
+            if not validate_email(email):
                 messages.error(request, 'Invalid email!')
-                context['pre_email'] = ''
-                return render(request, 'user/signup.html', context)
+                return render(request, 'user/signup.html')
 
-            password_check = validate_password(password1)
-            if password_check is False:
+            # Password validation
+            if password1 != password2:
+                messages.error(request, 'Passwords do not match!')
+                return render(request, 'user/signup.html')
+
+            if not validate_password(password1):
                 messages.error(request, 'Please enter a strong password!')
-                context['pre_password1'] = ''
-                context['pre_password2'] = ''
-                return render(request, 'user/signup.html', context)
+                return render(request, 'user/signup.html')
 
+            # Create user and send OTP
             user = User.objects.create_user(first_name=firstname, last_name=lastname, username=username, email=email, password=password1)
             user.is_active = False
             user.save()
@@ -103,7 +98,7 @@ def user_signup(request):
                 fail_silently=False
             )
             return render(request, 'user/signup.html', {'otp': True, 'user': user})
-    messages.success(request,'Registration successfully compleated!')
+
     return render(request, 'user/signup.html')
 
 

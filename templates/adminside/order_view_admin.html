@@ -88,24 +88,28 @@
                             
                             <tr>
                                 {% if orderview.coupon.coupon_discount_amount is null %}
-                                <td><strong>amount<span> : 0</td>
+                                <td><strong>Coupon amount : </td>
+                                <td> 0</td>
                                   {% else %}
-                                <td><strong>Coupon amount : {{ orderview.coupon.coupon_discount_amount  }}</td>
+                                <td><strong>Coupon amount :</td> 
+                                <td><strong>₹{{ orderview.coupon.coupon_discount_amount  }}</td>
                                   {% endif %}
                             </tr>
 
                             <tr>
                                 {% for i in products  %}
                                 {% if i.offer_amount.discount_amount is null %}
-                                <td>Discount amount<span> : 0 </td>
+                                <td><strong>Discount amount<span> : </td>
+                                <td>0</td>
                                 {% else %}
-                                <td>Discount amount : ₹{{ i.offer_amount.discount_amount|mul:i.quantity  }}</td>
+                                <td><strong>Discount amount : </td>
+                                <td>₹{{ i.offer_amount.discount_amount|mul:i.quantity  }}</td>
                                 {% endif %}
                                 {% endfor %}
                             </tr>
 
                             <tr>
-                                <td>Tax</td>
+                                <td><strong>Tax</td>
                                 <td>: ₹{{orderview.tax }}</td>
                             </tr>
 
@@ -139,9 +143,8 @@
                             </tr>
                             <tr></tr>
                             <tr>
-                                <td><strong>Ordder status</strong></td>
+                                <td><strong>Order status</strong></td>
                                 
-                                {% comment %} <td> : {{orderview.order_status}} {% endcomment %}
                             <td>
                             {% for k in products %}
                             {% if k.orderitem_status.item_status == 'Pending' %}
