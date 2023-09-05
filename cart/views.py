@@ -14,9 +14,7 @@ from cart.models import Cart
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 def add_cart(request):
     if request.method == 'POST':
-
         if request.user.is_authenticated:
-
             prod_id=request.POST.get('prod_id')
 
             try:
@@ -27,31 +25,15 @@ def add_cart(request):
                 return JsonResponse({'status':'No such prodcut found '})
             
             if Cart.objects.filter(user=request.user,variant=prod_id).exists():
+               
                 
-                existing_cart_item = (Cart.objects.filter(
-                    user=request.user, variant=prod_id).first())
-                
-                if existing_cart_item:
-                    new_total_qty = existing_cart_item.product_qty + prod_qty
-                    product_quantity= Variant.product
-
-                    if product_check.quantity >= new_total_qty and new_total_qty <= 5 :
-                        existing_cart_item.product_qty = new_total_qty
-                        existing_cart_item.single_total = new_total_qty 
-                        product_check.product.product_price
-                        existing_cart_item.save()
-
-                    else:
-                        return JsonResponse({'status': 'Sorry  quantity not available'})
-                    return JsonResponse({'status': 'Quantity updated in cart'})
+                return JsonResponse({'status':'Product already in cart'})
                 
             else:
                 prod_qty=int(request.POST.get('product_qty'))
-                variant_qty = prod_qty 
-                if product_check.quantity>=variant_qty and product_check.quantity!=0 and prod_qty < 5:
-                    total = variant_qty * product_check.product.product_price
-                    Cart.objects.create(
-                        user=request.user,variant=product_check,product_qty=prod_qty,single_total=total)
+             
+                if product_check.quantity>=prod_qty:
+                    Cart.objects.create(user=request.user,variant=product_check,product_qty=prod_qty)
                     try:
                         if Wishlist.objects.filter(user=request.user,variant=prod_id,product_qty=prod_qty):
                             wishlist = Wishlist.objects.filter(user=request.user,variant=prod_id,product_qty=prod_qty)
@@ -60,7 +42,7 @@ def add_cart(request):
                         pass
                     return JsonResponse({'status':'Product added successfully'})
                 else:
-                    return JsonResponse({'status':'Sorry  quantity not available'})
+                    return JsonResponse({'status':'Only few quantity available'})
         else:
             return JsonResponse({'status':'you are not login please Login to continue'})
     return redirect('user_login1')
