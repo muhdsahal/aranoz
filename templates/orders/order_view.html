@@ -30,7 +30,12 @@
           <div class="card border rounded  mb-3">
             <div class="card-body">
               <h5 class="card-title" style="font-weight: bold;">{{address.first_name}} {{address.last_name}}</h5>
-              <p class="card-text">{{address.address}},{{address.city}},{{address.state}} </p>
+              <h5 class="card-text">{{address.address}}</h5>
+              <h5 class="card-text">{{address.city}}</h5>
+              <h5 class="card-text">{{address.state}}</h5>
+              <h5 class="card-text">{{address.country}}</h5>
+              <h5 class="card-text">{{address.pincode}}</h5>
+              
               <div>
                 <!-- Button trigger modal -->
                   <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#address{{forloop.counter}}">

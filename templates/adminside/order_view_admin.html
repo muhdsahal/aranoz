@@ -84,10 +84,35 @@
                                 <td>{{orderview.user.first_name}}</td>
                             </tr>
 
+                            
+                            <tr>
+                                {% if orderview.coupon.coupon_discount_amount is null %}
+                                <td><strong>amount<span> : 0</td>
+                                  {% else %}
+                                <td><strong>Coupon amount : {{ orderview.coupon.coupon_discount_amount  }}</td>
+                                  {% endif %}
+                            </tr>
+                            
+                            <tr>
+                                {% for i in products  %}
+                                {% if i.offer_amount.discount_amount is null %}
+                                <td>Discount amount<span> : 0 </td>
+                                {% else %}
+                                <td>Discount amount : ₹{{ i.offer_amount.discount_amount|mul:i.quantity  }}</td>
+                                {% endif %}
+                                {% endfor %}
+                            </tr>
+
+                            <tr>
+                                <td>Tax</td>
+                                <td>: ₹{{orderview.tax }}</td>
+                            </tr>
+
                             <tr>
                                 <td><strong>Total price</strong></td>
-                                <td>:₹{{orderview.total_price}}</td>
+                                <td>: ₹{{orderview.total_price}}</td>
                             </tr>
+
                             <tr>
                                 <td><strong>Payment method</strong></td>
                                 <td>:{{orderview.payment_mode}}</td>
