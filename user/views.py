@@ -103,7 +103,6 @@ def user_signup(request):
                 fail_silently=False
             )
             return render(request, 'user/signup.html', {'otp': True, 'user': user})
-    messages.success(request,'Registration successfully compleated!')
     return render(request, 'user/signup.html')
 
 
